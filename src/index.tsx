@@ -77,11 +77,9 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <RecoilRoot>
-    <React.StrictMode>
-      <ThemeProvider theme={darkTheme}>
-        <GlobalStyle />
-        <App />
-      </ThemeProvider>
-    </React.StrictMode>
+    <ThemeProvider theme={darkTheme}>
+      <GlobalStyle />
+      <App />
+    </ThemeProvider>
   </RecoilRoot>
 );
