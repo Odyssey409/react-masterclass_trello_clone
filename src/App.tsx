@@ -7,6 +7,7 @@ import {
 import { useRecoilState } from "recoil";
 import styled from "styled-components";
 import { toDoState } from "./atoms";
+import { set } from "react-hook-form";
 
 const Wrapper = styled.div`
   display: flex;
@@ -41,7 +42,23 @@ const Card = styled.div`
 
 function App() {
   const [toDos, setToDos] = useRecoilState(toDoState);
-  const onDragEnd = ({ destination, source }: DropResult) => {};
+  const onDragEnd = ({ draggableId, destination, source }: DropResult) => {
+    if (!destination) return;
+    const newToDos = Array.from(toDos);
+    const [removed] = newToDos.splice(source.index, 1);
+    newToDos.splice(destination.index, 0, removed);
+    setToDos(newToDos);
+
+    // 이건 니꼬쌤의 방식 (위의 코드와 동일한 결과) & useRecoilState의 set 함수는
+    //값을 보내도 되고 함수를 보내도 된다.
+    // if (!destination) return;
+    // setToDos((oldToDos) => {
+    //   const copyToDos = [...oldToDos];
+    //   copyToDos.splice(source.index, 1);
+    //   copyToDos.splice(destination?.index, 0, draggableId);
+    //   return copyToDos;
+    // });
+  };
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Wrapper>
@@ -50,7 +67,7 @@ function App() {
             {(provided) => (
               <Board ref={provided.innerRef} {...provided.droppableProps}>
                 {toDos.map((toDo, index) => (
-                  <Draggable key={index} draggableId={toDo} index={index}>
+                  <Draggable key={toDo} draggableId={toDo} index={index}>
                     {(provided) => (
                       <Card
                         ref={provided.innerRef}
