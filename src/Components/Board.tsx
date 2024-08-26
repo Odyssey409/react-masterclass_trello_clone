@@ -9,6 +9,19 @@ const Wrapper = styled.div`
   background-color: ${(props) => props.theme.boardColor};
   border-radius: 5px;
   min-height: 300px;
+  display: flex;
+  flex-direction: column;
+`;
+interface IAriaProps {
+  isDraggingOver: boolean;
+  isDraggingFromThis: boolean;
+}
+
+const Area = styled.div<IAriaProps>`
+  background-color: ${(props) =>
+    props.isDraggingOver ? "pink" : props.isDraggingFromThis ? "red" : "blue"};
+  flex-grow: 1;
+  transition: background-color 0.3s ease-in-out;
 `;
 
 const Title = styled.h2`
@@ -28,9 +41,10 @@ function Board({ toDos, boardId }: IBoardProps) {
     <Wrapper>
       <Title>{boardId}</Title>
       <Droppable droppableId={boardId}>
-        {(provided) => (
-          <div
-            style={{ backgroundColor: "red" }}
+        {(provided, snapshot) => (
+          <Area
+            isDraggingOver={snapshot.isDraggingOver}
+            isDraggingFromThis={Boolean(snapshot.draggingFromThisWith)}
             ref={provided.innerRef}
             {...provided.droppableProps}
           >
@@ -38,7 +52,7 @@ function Board({ toDos, boardId }: IBoardProps) {
               <DragabbleCard key={toDo} index={index} toDo={toDo} />
             ))}
             {provided.placeholder}
-          </div>
+          </Area>
         )}
       </Droppable>
     </Wrapper>
