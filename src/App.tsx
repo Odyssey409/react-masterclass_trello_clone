@@ -24,15 +24,16 @@ const Boards = styled.div`
 function App() {
   const [toDos, setToDos] = useRecoilState(toDoState);
   const onDragEnd = (info: DropResult) => {
-    const { destination, source, draggableId } = info;
+    const { destination, source } = info;
 
     if (!destination) return;
 
     if (destination?.droppableId === source.droppableId) {
       setToDos((allBoards) => {
         const boardCopy = [...allBoards[source.droppableId]];
+        const taskObj = boardCopy[source.index];
         boardCopy.splice(source.index, 1);
-        boardCopy.splice(destination?.index, 0, draggableId);
+        boardCopy.splice(destination?.index, 0, taskObj);
         return {
           ...allBoards,
           [source.droppableId]: boardCopy,
@@ -42,9 +43,10 @@ function App() {
     if (destination?.droppableId !== source.droppableId) {
       setToDos((allBoards) => {
         const sourceBoard = [...allBoards[source.droppableId]];
+        const taskObj = sourceBoard[source.index];
         const targetBoard = [...allBoards[destination.droppableId]];
         sourceBoard.splice(source.index, 1);
-        targetBoard.splice(destination.index, 0, draggableId);
+        targetBoard.splice(destination.index, 0, taskObj);
         return {
           ...allBoards,
           [source.droppableId]: sourceBoard,
@@ -52,22 +54,6 @@ function App() {
         };
       });
     }
-
-    // if (!destination) return;
-    // const newToDos = Array.from(toDos);
-    // const [removed] = newToDos.splice(source.index, 1);
-    // newToDos.splice(destination.index, 0, removed);
-    // setToDos(newToDos);
-
-    // 이건 니꼬쌤의 방식 (위의 코드와 동일한 결과) & useRecoilState의 set 함수는
-    //값을 보내도 되고 함수를 보내도 된다.
-    // if (!destination) return;
-    // setToDos((oldToDos) => {
-    //   const copyToDos = [...oldToDos];
-    //   copyToDos.splice(source.index, 1);
-    //   copyToDos.splice(destination?.index, 0, draggableId);
-    //   return copyToDos;
-    // });
   };
   return (
     <DragDropContext onDragEnd={onDragEnd}>
